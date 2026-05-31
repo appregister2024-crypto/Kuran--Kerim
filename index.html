@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kuran">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%231A1F2E%22/><path d=%22M65 75A30 30 0 1 1 50 15a40 40 0 0 0 15 60z%22 fill=%22%23C9A84C%22/></svg>">
+<title>Kuran-ı Kerim</title>
+
+<style>
+:root {
+  -webkit-tap-highlight-color: transparent; /* iOS dokunma parlaklığını kapatır */
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;min-height:100%;}
+
+.app{
+  --gold:#C9A84C;--gold-l:#E8C97A;
+  --d1:#1A1F2E;--d2:#232A3B;--d3:#2D3650;--d4:#3D4A65;
+  --txt:#F0EAD6;--dim:#8A94AA;--grn:#2ECC71;
+  --bg:var(--d1);--card:var(--d2);--border:var(--d3);
+  /* iOS sistem fontları */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background:var(--d1);
+  width:100%;
+  min-height:100vh;
+  color:var(--txt);
+  /* Alt çentik için boşluk */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.app.light{
+  --bg:#F5F0E8;--card:#FFFFFF;--border:#E0D8C8;
+  --txt:#1A1A2E;--dim:#7A7A8E;--d3:#E0D8C8;--d4:#C8C0B0;
+  --gold:#9A6F2C;--gold-l:#7A5218;
+  background:#F5F0E8;
+  color:#1A1A2E;
+}
+
+.top-bar{
+  background: rgba(35, 42, 59, 0.85); /* Yarı şeffaf */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  /* Üst çentik (notch) için boşluk */
+  padding: calc(env(safe-area-inset-top) + 16px) 20px 16px;
+  display:flex;align-items:center;gap:14px;
+  border-bottom:0.5px solid var(--border);
+  position:sticky;top:0;z-index:50;
+}
+.app.light .top-bar {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.qicon{
+  width:44px;height:44px;border-radius:12px;
+  background:var(--d3);border:0.5px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gold);font-size:24px;flex-shrink:0;
+}
+.app.light .qicon{background:#EDE6D6;}
+.top-title{font-size:18px;font-weight:600;color:var(--gold);}
+.top-sub{font-size:13px;color:var(--dim);margin-top:2px;}
+
+.theme-btn{
+  margin-left:auto;
+  background:var(--d3);
+  border:0.5px solid var(--d4);
+  border-radius:24px;
+  padding:8px 14px;
+  display:flex;align-items:center;gap:8px;
+  cursor:pointer;
+  color:var(--dim);
+  font-size:13px;
+  font-weight:500;
+  white-space:nowrap;
+  transition:all .2s;
+}
+.app.light .theme-btn{background:#EDE6D6;border-color:#C8C0B0;}
+.theme-btn:active{transform:scale(0.95);}
+
+.pcard{
+  background:var(--card);margin:16px;border-radius:16px;
+  border:0.5px solid var(--border);padding:20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+.sinfo{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;}
+.il .lbl{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:6px;font-weight:600;}
+.il .val{font-size:40px;font-weight:600;color:var(--gold-l);line-height:1;}
+.il .sub{font-size:13px;color:var(--dim);margin-top:6px;}
+.ir{text-align:right;}
+.ir .lbl{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:6px;font-weight:600;}
+.ir .sname{font-size:22px;font-weight:600;color:var(--txt);}
+.ir .sarab{font-size:28px;color:var(--gold);margin-top:4px;}
+.ir .sstat{font-size:13px;color:var(--dim);margin-top:6px;display:flex;align-items:center;gap:6px;justify-content:flex-end;}
+.pbar{height:5px;background:var(--border);border-radius:3px;margin-bottom:10px;overflow:hidden;}
+.pfill{height:100%;background:var(--grn);border-radius:3px;width:0%;transition:width .5s linear;}
+.ptimes{display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin-bottom:24px;font-weight:500;}
+.ctrls{display:flex;align-items:center;justify-content:center;gap:16px;}
+.cb{
+  background:var(--d3);border:0.5px solid var(--d4);
+  border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--txt);transition:all .15s;padding:0;
+}
+.app.light .cb{background:#EDE6D6;border-color:#C8C0B0;color:#1A1A2E;}
+.cb:active{transform:scale(0.92); border-color:var(--gold);color:var(--gold);}
+/* Touch target büyütüldü */
+.cb.sm{width:48px;height:48px;}
+.cb.md{width:56px;height:56px;}
+.cb.lg{
+  width:76px;height:76px;
+  background:var(--grn);border-color:var(--grn);color:#fff;
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+}
+.cb.lg:active{transform:scale(0.95);background:#27AE60;}
+
+.arow{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;margin:0 16px 16px;
+  background:var(--card);border-radius:14px;border:0.5px solid var(--border);
+}
+.albl{font-size:15px;font-weight:500;color:var(--dim);display:flex;align-items:center;gap:10px;}
+.tgl{width:50px;height:30px;border-radius:15px;background:var(--d4);position:relative;cursor:pointer;border:none;transition:background .2s;}
+.app.light .tgl{background:#C8C0B0;}
+.tgl.on{background:var(--grn);}
+.tgl::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .2s; box-shadow:0 2px 4px rgba(0,0,0,0.2);}
+.tgl.on::after{left:23px;}
+
+.shdr{display:flex;align-items:center;justify-content:space-between;padding:0 20px;margin-bottom:10px;}
+.slbl{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:600;}
+.sbadge{
+  font-size:13px;color:var(--gold);font-weight:500;
+  background:rgba(201,168,76,.12);
+  border:0.5px solid rgba(201,168,76,.3);
+  border-radius:20px;padding:6px 14px;
+  cursor:pointer;display:flex;align-items:center;gap:6px;
+}
+.app.light .sbadge{background:rgba(154,111,44,.1);border-color:rgba(154,111,44,.3);}
+
+.lpanel{
+  margin:0 16px 16px;background:var(--card);
+  border-radius:14px;border:0.5px solid var(--border);
+  max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  -webkit-overflow-scrolling: touch; /* iOS pürüzsüz kaydırma */
+}
+.lpanel.open{max-height:60vh;overflow-y:auto;}
+.lsearch{
+  padding:12px 16px;border-bottom:0.5px solid var(--border);
+  position:sticky;top:0;background:var(--card);z-index:1;
+}
+.lsearch input{
+  width:100%;background:var(--d3);border:0.5px solid var(--d4);
+  border-radius:10px;padding:12px 16px;font-size:16px;color:var(--txt);
+  -webkit-appearance: none; /* iOS standart input stilini ezer */
+}
+.app.light .lsearch input{background:#EDE6D6;border-color:#C8C0B0;color:#1A1A2E;}
+.lsearch input::placeholder{color:var(--dim);}
+.lsearch input:focus{outline:none;border-color:var(--gold);}
+.si{
+  display:flex;align-items:center;gap:14px;
+  padding:16px;cursor:pointer;
+  border-bottom:0.5px solid rgba(61,74,101,.3);transition:background .1s;
+}
+.app.light .si{border-bottom-color:rgba(200,192,176,.5);}
+.si:last-child{border-bottom:none;}
+.si:active{background:var(--d3);}
+.app.light .si:active{background:#EDE6D6;}
+.si.act{background:rgba(201,168,76,.15);}
+.snum{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--d3);border:0.5px solid var(--d4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:600;color:var(--dim);flex-shrink:0;
+}
+.app.light .snum{background:#EDE6D6;border-color:#C8C0B0;}
+.si.act .snum{background:var(--gold);border-color:var(--gold);color:#1A1F2E;}
+.sn{font-size:16px;font-weight:600;color:var(--txt);}
+.sm2{font-size:13px;color:var(--dim);margin-top:4px;}
+.sar{margin-left:auto;font-size:22px;color:var(--gold);flex-shrink:0;}
+
+.mpanel{margin:0 16px 24px;background:var(--card);border-radius:14px;border:0.5px solid var(--border);overflow:hidden;}
+.minner{padding:16px;}
+.mlng{padding:30px;text-align:center;font-size:15px;color:var(--dim);}
+.ma{padding:16px 0;border-bottom:0.5px solid var(--border);display:flex;gap:14px;align-items:flex-start;}
+.app.light .ma{border-bottom-color:#E0D8C8;}
+.ma:last-child{border-bottom:none;}
+.mn{
+  min-width:28px;height:28px;border-radius:50%;
+  background:rgba(201,168,76,.15);
+  border:0.5px solid rgba(201,168,76,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;color:var(--gold);
+  flex-shrink:0;margin-top:2px;
+}
+.mt{font-size:16px;line-height:1.6;color:var(--txt);}
+
+.ldot{width:8px;height:8px;border-radius:50%;background:var(--grn);animation:blink 1.2s ease-in-out infinite;display:inline-block;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <div class="top-bar">
+    <div class="qicon">☽</div>
+    <div>
+      <div class="top-title">Kuran-ı Kerim</div>
+      <div class="top-sub">Mişari Raşid · 114 Sure</div>
+    </div>
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" aria-label="Tema değiştir">
+      <svg id="themeIco" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <span id="themeTxt">Açık Tema</span>
+    </button>
+  </div>
+
+  <div class="pcard">
+    <div class="sinfo">
+      <div class="il">
+        <div class="lbl">Sure No.</div>
+        <div class="val" id="sNum">1</div>
+        <div class="sub" id="sType">Mekki · 7 ayet</div>
+      </div>
+      <div class="ir">
+        <div class="lbl">Sure / Cüz</div>
+        <div class="sname" id="sName">Fâtiha</div>
+        <div class="sarab" id="sArab">الفاتحة</div>
+        <div class="sstat">
+          <span class="ldot" id="ldot" style="display:none"></span>
+          <span id="sStat">Hazır</span>
+        </div>
+      </div>
+    </div>
+    <div class="pbar"><div class="pfill" id="prog"></div></div>
+    <div class="ptimes"><span id="tC">0:00</span><span id="tT">—</span></div>
+    <div class="ctrls">
+      <button class="cb sm" onclick="prevS()" aria-label="Önceki sure">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
+      </button>
+      <button class="cb md" onclick="seekB()" aria-label="10 saniye geri">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 2v6h6M2.66 15.57a10 10 0 1 0 .57-4.3"/><text x="8.5" y="15.5" font-size="6" fill="currentColor" stroke="none" font-weight="bold" font-family="-apple-system, sans-serif">10</text></svg>
+      </button>
+      <button class="cb lg" id="playBtn" onclick="togglePlay()" aria-label="Oynat/Durdur">
+        <svg id="playIco" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </button>
+      <button class="cb md" onclick="seekF()" aria-label="10 saniye ileri">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-4.3"/><text x="8.5" y="15.5" font-size="6" fill="currentColor" stroke="none" font-weight="bold" font-family="-apple-system, sans-serif">10</text></svg>
+      </button>
+      <button class="cb sm" onclick="nextS()" aria-label="Sonraki sure">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="arow">
+    <span class="albl">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+      Otomatik sıralı oynatma
+    </span>
+    <button class="tgl" id="autoT" onclick="toggleAuto()" aria-label="Otomatik oynatma"></button>
+  </div>
+
+  <div class="shdr">
+    <span class="slbl">Tüm Sureler</span>
+    <button class="sbadge" onclick="toggleList()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span id="listTxt">Listeyi aç</span>
+      <svg id="listChv" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .3s" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+  </div>
+
+  <div class="lpanel" id="lPanel">
+    <div class="lsearch"><input type="text" id="sq" placeholder="Sure ara..." oninput="filterL()"/></div>
+    <div id="lItems"></div>
+  </div>
+
+  <div class="shdr">
+    <span class="slbl">Türkçe Meal</span>
+    <span class="sbadge" id="mBadge">—</span>
+  </div>
+
+  <div class="mpanel">
+    <div class="minner" id="mInner">
+      <div class="mlng">Oynatmaya başlayın...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const S=[
+  {n:"Fâtiha",a:"الفاتحة",v:7,t:"Mekki"},{n:"Bakara",a:"البقرة",v:286,t:"Medeni"},
+  {n:"Âl-i İmrân",a:"آل عمران",v:200,t:"Medeni"},{n:"Nisâ",a:"النساء",v:176,t:"Medeni"},
+  {n:"Mâide",a:"المائدة",v:120,t:"Medeni"},{n:"En'âm",a:"الأنعام",v:165,t:"Mekki"},
+  {n:"A'râf",a:"الأعراف",v:206,t:"Mekki"},{n:"Enfâl",a:"الأنفال",v:75,t:"Medeni"},
+  {n:"Tevbe",a:"التوبة",v:129,t:"Medeni"},{n:"Yûnus",a:"يونس",v:109,t:"Mekki"},
+  {n:"Hûd",a:"هود",v:123,t:"Mekki"},{n:"Yûsuf",a:"يوسف",v:111,t:"Mekki"},
+  {n:"Ra'd",a:"الرعد",v:43,t:"Medeni"},{n:"İbrâhîm",a:"إبراهيم",v:52,t:"Mekki"},
+  {n:"Hicr",a:"الحجر",v:99,t:"Mekki"},{n:"Nahl",a:"النحل",v:128,t:"Mekki"},
+  {n:"İsrâ",a:"الإسراء",v:111,t:"Mekki"},{n:"Kehf",a:"الكهف",v:110,t:"Mekki"},
+  {n:"Meryem",a:"مريم",v:98,t:"Mekki"},{n:"Tâhâ",a:"طه",v:135,t:"Mekki"},
+  {n:"Enbiyâ",a:"الأنبياء",v:112,t:"Mekki"},{n:"Hac",a:"الحج",v:78,t:"Medeni"},
+  {n:"Mu'minûn",a:"المؤمنون",v:118,t:"Mekki"},{n:"Nûr",a:"النور",v:64,t:"Medeni"},
+  {n:"Furkân",a:"الفرقان",v:77,t:"Mekki"},{n:"Şuarâ",a:"الشعراء",v:227,t:"Mekki"},
+  {n:"Neml",a:"النمل",v:93,t:"Mekki"},{n:"Kasas",a:"القصص",v:88,t:"Mekki"},
+  {n:"Ankebût",a:"العنكبوت",v:69,t:"Mekki"},{n:"Rûm",a:"الروم",v:60,t:"Mekki"},
+  {n:"Lokmân",a:"لقمان",v:34,t:"Mekki"},{n:"Secde",a:"السجدة",v:30,t:"Mekki"},
+  {n:"Ahzâb",a:"الأحزاب",v:73,t:"Medeni"},{n:"Sebe'",a:"سبإ",v:54,t:"Mekki"},
+  {n:"Fâtır",a:"فاطر",v:45,t:"Mekki"},{n:"Yâsîn",a:"يس",v:83,t:"Mekki"},
+  {n:"Sâffât",a:"الصافات",v:182,t:"Mekki"},{n:"Sâd",a:"ص",v:88,t:"Mekki"},
+  {n:"Zümer",a:"الزمر",v:75,t:"Mekki"},{n:"Mu'min",a:"غافر",v:85,t:"Mekki"},
+  {n:"Fussilet",a:"فصلت",v:54,t:"Mekki"},{n:"Şûrâ",a:"الشورى",v:53,t:"Mekki"},
+  {n:"Zuhruf",a:"الزخرف",v:89,t:"Mekki"},{n:"Duhân",a:"الدخان",v:59,t:"Mekki"},
+  {n:"Câsiye",a:"الجاثية",v:37,t:"Mekki"},{n:"Ahkâf",a:"الأحقاف",v:35,t:"Mekki"},
+  {n:"Muhammed",a:"محمد",v:38,t:"Medeni"},{n:"Fetih",a:"الفتح",v:29,t:"Medeni"},
+  {n:"Hucurât",a:"الحجرات",v:18,t:"Medeni"},{n:"Kâf",a:"ق",v:45,t:"Mekki"},
+  {n:"Zâriyât",a:"الذاريات",v:60,t:"Mekki"},{n:"Tûr",a:"الطور",v:49,t:"Mekki"},
+  {n:"Necm",a:"النجم",v:62,t:"Mekki"},{n:"Kamer",a:"القمر",v:55,t:"Mekki"},
+  {n:"Rahmân",a:"الرحمن",v:78,t:"Medeni"},{n:"Vâkıa",a:"الواقعة",v:96,t:"Mekki"},
+  {n:"Hadîd",a:"الحديد",v:29,t:"Medeni"},{n:"Mücâdele",a:"المجادلة",v:22,t:"Medeni"},
+  {n:"Haşr",a:"الحشر",v:24,t:"Medeni"},{n:"Mümtehine",a:"الممتحنة",v:13,t:"Medeni"},
+  {n:"Saf",a:"الصف",v:14,t:"Medeni"},{n:"Cuma",a:"الجمعة",v:11,t:"Medeni"},
+  {n:"Munâfikûn",a:"المنافقون",v:11,t:"Medeni"},{n:"Teğâbun",a:"التغابن",v:18,t:"Medeni"},
+  {n:"Talâk",a:"الطلاق",v:12,t:"Medeni"},{n:"Tahrîm",a:"التحريم",v:12,t:"Medeni"},
+  {n:"Mülk",a:"الملك",v:30,t:"Mekki"},{n:"Kalem",a:"القلم",v:52,t:"Mekki"},
+  {n:"Hâkka",a:"الحاقة",v:52,t:"Mekki"},{n:"Meâric",a:"المعارج",v:44,t:"Mekki"},
+  {n:"Nûh",a:"نوح",v:28,t:"Mekki"},{n:"Cin",a:"الجن",v:28,t:"Mekki"},
+  {n:"Müzzemmil",a:"المزمل",v:20,t:"Mekki"},{n:"Müddessir",a:"المدثر",v:56,t:"Mekki"},
+  {n:"Kıyâme",a:"القيامة",v:40,t:"Mekki"},{n:"İnsân",a:"الإنسان",v:31,t:"Medeni"},
+  {n:"Mürselât",a:"المرسلات",v:50,t:"Mekki"},{n:"Nebe'",a:"النبأ",v:40,t:"Mekki"},
+  {n:"Nâziât",a:"النازعات",v:46,t:"Mekki"},{n:"Abese",a:"عبس",v:42,t:"Mekki"},
+  {n:"Tekvîr",a:"التكوير",v:29,t:"Mekki"},{n:"İnfitâr",a:"الانفطار",v:19,t:"Mekki"},
+  {n:"Mutaffifîn",a:"المطففين",v:36,t:"Mekki"},{n:"İnşikâk",a:"الانشقاق",v:25,t:"Mekki"},
+  {n:"Burûc",a:"البروج",v:22,t:"Mekki"},{n:"Târık",a:"الطارق",v:17,t:"Mekki"},
+  {n:"A'lâ",a:"الأعلى",v:19,t:"Mekki"},{n:"Ğâşiye",a:"الغاشية",v:26,t:"Mekki"},
+  {n:"Fecr",a:"الفجر",v:30,t:"Mekki"},{n:"Beled",a:"البلد",v:20,t:"Mekki"},
+  {n:"Şems",a:"الشمس",v:15,t:"Mekki"},{n:"Leyl",a:"الليل",v:21,t:"Mekki"},
+  {n:"Duhâ",a:"الضحى",v:11,t:"Mekki"},{n:"İnşirâh",a:"الشرح",v:8,t:"Mekki"},
+  {n:"Tîn",a:"التين",v:8,t:"Mekki"},{n:"Alak",a:"العلق",v:19,t:"Mekki"},
+  {n:"Kadr",a:"القدر",v:5,t:"Mekki"},{n:"Beyyine",a:"البينة",v:8,t:"Medeni"},
+  {n:"Zilzâl",a:"الزلزلة",v:8,t:"Medeni"},{n:"Âdiyât",a:"العاديات",v:11,t:"Mekki"},
+  {n:"Kâria",a:"القارعة",v:11,t:"Mekki"},{n:"Tekâsür",a:"التكاثر",v:8,t:"Mekki"},
+  {n:"Asr",a:"العصر",v:3,t:"Mekki"},{n:"Hümeze",a:"الهمزة",v:9,t:"Mekki"},
+  {n:"Fîl",a:"الفيل",v:5,t:"Mekki"},{n:"Kureyş",a:"قريش",v:4,t:"Mekki"},
+  {n:"Mâûn",a:"الماعون",v:7,t:"Mekki"},{n:"Kevser",a:"الكوثر",v:3,t:"Mekki"},
+  {n:"Kâfirûn",a:"الكافرون",v:6,t:"Mekki"},{n:"Nasr",a:"النصر",v:3,t:"Medeni"},
+  {n:"Mesed",a:"المسد",v:5,t:"Mekki"},{n:"İhlâs",a:"الإخلاص",v:4,t:"Mekki"},
+  {n:"Felak",a:"الفلق",v:5,t:"Mekki"},{n:"Nâs",a:"الناس",v:6,t:"Mekki"}
+];
+const LM={
+  1:["Rahman ve Rahim olan Allah'ın adıyla","Hamd, âlemlerin Rabbi Allah'a mahsustur.","O, Rahman'dır, Rahim'dir.","Din gününün sahibidir.","Yalnız sana ibadet eder ve yalnız senden yardım dileriz.","Bizi doğru yola ilet.","Kendilerine nimet verdiklerinin yoluna; gazaba uğrayanlarınkine ve sapıklarınkine değil."],
+  36:["Yâ Sîn.","Hikmet dolu Kur'an'a andolsun ki,","şüphesiz sen gönderilen peygamberlerdensin,","dosdoğru bir yol üzerindesin.","Bu Kur'an, güçlü ve pek merhametli Allah'ın indirmesidir."],
+  55:["Rahman öğretti.","Kur'an'ı öğretti.","İnsanı yarattı.","Ona beyanı öğretti.","Güneş ve ay bir hesaba göredir.","Bitkiler ve ağaçlar da secde ederler."],
+  112:["De ki: O Allah, birdir.","Allah Samed'dir.","O doğurmamış ve doğurulmamıştır.","Hiçbir şey O'nun dengi ve benzeri değildir."],
+  113:["De ki: Felak'ın Rabbine sığınırım.","Yarattığı şeylerin şerrinden,","karanlığı çöktüğünde gecenin şerrinden,","düğümlere üfüren büyücülerin şerrinden,","haset ettiği zaman hasetçinin şerrinden."],
+  114:["De ki: İnsanların Rabbine sığınırım.","İnsanların Melik'ine.","İnsanların İlahı'na.","Sinsi vesvesecinin şerrinden.","İnsanların göğüslerine vesvese verir.","Gerek cinlerden, gerek insanlardan."]
+};
+
+const PLAY='<polygon points="5 3 19 12 5 21 5 3"/>';
+const PAUSE='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+const MOON_ICO='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+const SUN_ICO='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+
+let cur=0,playing=false,autoP=false,listOpen=false,isLight=false,mCache={},filt=S.map((_,i)=>i);
+const aud=new Audio();
+
+function p3(n){return String(n).padStart(3,'0');}
+function fmt(s){s=Math.floor(s||0);return Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60;}
+
+aud.ontimeupdate=()=>{
+  const p=aud.duration?aud.currentTime/aud.duration*100:0;
+  document.getElementById('prog').style.width=Math.round(p)+'%';
+  document.getElementById('tC').textContent=fmt(aud.currentTime);
+  if(aud.duration)document.getElementById('tT').textContent=fmt(aud.duration);
+};
+aud.onended=()=>{setP(false);if(autoP&&cur<113)setTimeout(()=>sel(cur+1),800);};
+aud.onerror=()=>{setP(false);document.getElementById('sStat').textContent='Yüklenemedi';};
+
+function setP(v){
+  playing=v;
+  document.getElementById('playIco').innerHTML=v?PAUSE:PLAY;
+  document.getElementById('ldot').style.display=v?'inline-block':'none';
+  document.getElementById('sStat').textContent=v?'Oynatılıyor':'Durduruldu';
+}
+
+function sel(i){
+  cur=i;const s=S[i];
+  document.getElementById('sNum').textContent=i+1;
+  document.getElementById('sName').textContent=s.n;
+  document.getElementById('sArab').textContent=s.a;
+  document.getElementById('sType').textContent=s.t+' · '+s.v+' ayet';
+  document.getElementById('mBadge').textContent=s.n+' (Sure '+(i+1)+')';
+  document.getElementById('prog').style.width='0%';
+  document.getElementById('tC').textContent='0:00';
+  document.getElementById('tT').textContent='—';
+  aud.pause();
+  aud.src='https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/'+p3(i+1)+'.mp3';
+  aud.load();
+  aud.play().then(()=>setP(true)).catch(()=>setP(false));
+  loadMeal(i);renderL();
+}
+
+function togglePlay(){
+  if(!aud.src){sel(cur);return;}
+  if(playing){aud.pause();setP(false);}
+  else{aud.play().then(()=>setP(true)).catch(()=>setP(false));}
+}
+function prevS(){if(cur>0)sel(cur-1);}
+function nextS(){if(cur<113)sel(cur+1);}
+function seekB(){aud.currentTime=Math.max(0,(aud.currentTime||0)-10);}
+function seekF(){aud.currentTime=Math.min(aud.duration||0,(aud.currentTime||0)+10);}
+
+function toggleAuto(){
+  autoP=!autoP;
+  document.getElementById('autoT').classList.toggle('on',autoP);
+}
+
+function toggleTheme(){
+  isLight=!isLight;
+  document.getElementById('app').classList.toggle('light',isLight);
+  document.getElementById('themeIco').innerHTML=isLight?SUN_ICO:MOON_ICO;
+  document.getElementById('themeTxt').textContent=isLight?'Koyu Tema':'Açık Tema';
+}
+
+function toggleList(){
+  listOpen=!listOpen;
+  document.getElementById('lPanel').classList.toggle('open',listOpen);
+  document.getElementById('listTxt').textContent=listOpen?'Listeyi kapat':'Listeyi aç';
+  document.getElementById('listChv').style.transform=listOpen?'rotate(180deg)':'';
+  if(listOpen)renderL();
+}
+
+function filterL(){
+  const q=document.getElementById('sq').value.toLowerCase();
+  filt=S.map((_,i)=>i).filter(i=>S[i].n.toLowerCase().includes(q)||String(i+1).includes(q));
+  renderL();
+}
+
+function renderL(){
+  document.getElementById('lItems').innerHTML=filt.map(i=>`
+    <div class="si${cur===i?' act':''}" onclick="sel(${i})">
+      <div class="snum">${i+1}</div>
+      <div><div class="sn">${S[i].n}</div><div class="sm2">${S[i].t} · ${S[i].v} ayet</div></div>
+      <div class="sar">${S[i].a}</div>
+    </div>`).join('');
+}
+
+async function loadMeal(idx){
+  const num=idx+1,el=document.getElementById('mInner');
+  if(mCache[num]){renderMeal(mCache[num]);return;}
+  if(LM[num]){mCache[num]=LM[num];renderMeal(LM[num]);return;}
+  el.innerHTML='<div class="mlng">Meal yükleniyor...</div>';
+  try{
+    const r=await fetch(`https://api.alquran.cloud/v1/surah/${num}/tr.diyanet`);
+    const d=await r.json();
+    if(d.code===200){const a=d.data.ayahs.map(x=>x.text);mCache[num]=a;renderMeal(a);}
+    else el.innerHTML='<div class="mlng">Meal alınamadı.</div>';
+  }catch{el.innerHTML='<div class="mlng">Meal yüklenemedi. İnternet bağlantısını kontrol edin.</div>';}
+}
+
+function renderMeal(ayahs){
+  document.getElementById('mInner').innerHTML=ayahs.map((t,i)=>
+    `<div class="ma"><div class="mn">${i+1}</div><div class="mt">${t}</div></div>`).join('');
+}
+
+sel(0);
+</script>
+</body>
+</html>
