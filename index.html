@@ -18,40 +18,101 @@ html,body{width:100%;min-height:100%;}
   --d1:#1A1F2E;--d2:#232A3B;--d3:#2D3650;--d4:#3D4A65;
   --txt:#F0EAD6;--dim:#8A94AA;--grn:#2ECC71;
   --card:var(--d2);--border:var(--d3);
+  --topbar-bg:rgba(26,31,46,.92);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   background:var(--d1);width:100%;min-height:100vh;color:var(--txt);
   padding-bottom:env(safe-area-inset-bottom);
 }
-.app.light{
-  --card:#FFFFFF;--border:#E0D8C8;--txt:#1A1A2E;--dim:#7A7A8E;
-  --d3:#E0D8C8;--d4:#C8C0B0;--gold:#9A6F2C;--gold-l:#7A5218;
+/* ── 6 Tema ────────────────────────────────────────────── */
+.app.t-acik{
+  --gold:#9A6F2C;--gold-l:#7A5218;--grn:#2E8B57;
+  --d1:#F5F0E8;--d2:#FFFFFF;--d3:#E0D8C8;--d4:#C8C0B0;
+  --txt:#1A1A2E;--dim:#7A7A8E;
+  --card:#FFFFFF;--border:#E0D8C8;
+  --topbar-bg:rgba(255,255,255,.92);
   background:#F5F0E8;color:#1A1A2E;
 }
+.app.t-gece{
+  --gold:#C9A84C;--gold-l:#E8C97A;--grn:#2ECC71;
+  --d1:#070710;--d2:#0D0D1A;--d3:#161624;--d4:#202035;
+  --txt:#EEE8D8;--dim:#5A6480;
+  --card:var(--d2);--border:var(--d3);
+  --topbar-bg:rgba(7,7,16,.97);
+  background:#070710;color:#EEE8D8;
+}
+.app.t-lacivert{
+  --gold:#4BAEE8;--gold-l:#76C8F8;--grn:#2ECC71;
+  --d1:#04101E;--d2:#091828;--d3:#102238;--d4:#1A304E;
+  --txt:#D8EEFF;--dim:#4A7898;
+  --card:var(--d2);--border:var(--d3);
+  --topbar-bg:rgba(4,16,30,.97);
+  background:#04101E;color:#D8EEFF;
+}
+.app.t-akik{
+  --gold:#D4774E;--gold-l:#EE9970;--grn:#8BC34A;
+  --d1:#160806;--d2:#22100C;--d3:#301814;--d4:#40221E;
+  --txt:#F5E8DC;--dim:#9A7870;
+  --card:var(--d2);--border:var(--d3);
+  --topbar-bg:rgba(22,8,6,.97);
+  background:#160806;color:#F5E8DC;
+}
+.app.t-zumrut{
+  --gold:#3DBF82;--gold-l:#5ADBA0;--grn:#3DBF82;
+  --d1:#040E09;--d2:#081610;--d3:#102018;--d4:#1A2E22;
+  --txt:#D8F5E8;--dim:#4A7A62;
+  --card:var(--d2);--border:var(--d3);
+  --topbar-bg:rgba(4,14,9,.97);
+  background:#040E09;color:#D8F5E8;
+}
+/* ── light class = t-acik için eski selector uyumluluğu ── */
+.app.light{--gold:#9A6F2C;--gold-l:#7A5218;--d3:#E0D8C8;--d4:#C8C0B0;--txt:#1A1A2E;--dim:#7A7A8E;--card:#FFFFFF;--border:#E0D8C8;background:#F5F0E8;color:#1A1A2E;}
 
 /* ── Üst çubuk ── */
 .top-bar{
-  background:rgba(35,42,59,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  /* Fallback: iPhone status bar ~44-59px */
+  background:var(--topbar-bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   padding:52px 20px 14px;
-  /* Eski iOS (< 11.2) */
   padding:calc(constant(safe-area-inset-top) + 12px) 20px 14px;
-  /* Modern iOS / Android - en az 44px garantili */
   padding:max(env(safe-area-inset-top), 44px) 20px 14px;
   display:flex;align-items:center;gap:14px;
   border-bottom:.5px solid var(--border);position:sticky;top:0;z-index:50;
 }
-.app.light .top-bar{background:rgba(255,255,255,.85);}
-.qicon{width:40px;height:40px;border-radius:11px;background:var(--d3);border:.5px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:22px;flex-shrink:0;}
-.app.light .qicon{background:#EDE6D6;}
+/* qicon - tema seçici tetikleyici */
+.qicon{width:40px;height:40px;border-radius:11px;background:var(--d3);border:.5px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:22px;flex-shrink:0;cursor:pointer;transition:transform .15s;}
+.qicon:active{transform:scale(.9);}
 .top-title{font-size:17px;font-weight:600;color:var(--gold);}
 .top-sub{font-size:12px;color:var(--dim);margin-top:2px;}
-.theme-btn{
-  margin-left:auto;background:var(--d3);border:.5px solid var(--d4);border-radius:22px;
-  padding:7px 12px;display:flex;align-items:center;gap:7px;cursor:pointer;
-  color:var(--dim);font-size:12px;font-weight:500;white-space:nowrap;transition:all .2s;
+/* Mevcut tema adını gösteren küçük rozet */
+.theme-name-badge{
+  margin-left:auto;background:var(--d3);border:.5px solid var(--d4);border-radius:20px;
+  padding:6px 12px;font-size:12px;font-weight:500;color:var(--dim);white-space:nowrap;
 }
-.app.light .theme-btn{background:#EDE6D6;border-color:#C8C0B0;}
-.theme-btn:active{transform:scale(.95);}
+
+/* ── Tema seçici ── */
+.tp-backdrop{display:none;position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.3);}
+.tp-backdrop.open{display:block;}
+.theme-picker{
+  display:none;position:fixed;
+  top:52px;top:max(env(safe-area-inset-top),44px);
+  left:10px;
+  background:var(--d2);border:.5px solid var(--d4);border-radius:16px;
+  padding:14px;z-index:95;
+  box-shadow:0 10px 40px rgba(0,0,0,.5);
+  width:228px;
+}
+.theme-picker.open{display:block;}
+.tp-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;}
+.tp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.tp-item{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  cursor:pointer;padding:8px 4px;border-radius:10px;
+  border:.5px solid transparent;transition:all .15s;
+}
+.tp-item:active{transform:scale(.95);}
+.tp-item.on{background:var(--d3);border-color:var(--gold);}
+.tp-swatch{width:38px;height:38px;border-radius:50%;border:2px solid transparent;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.tp-item.on .tp-swatch{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.25);}
+.tp-lbl{font-size:11px;font-weight:600;color:var(--dim);}
+.tp-item.on .tp-lbl{color:var(--gold);}
 
 /* ── Oynatıcı kartı (kompakt) ── */
 .pcard{
@@ -157,17 +218,14 @@ html,body{width:100%;min-height:100%;}
 /* ── Tam ekran başlık çubuğu ── */
 .fs-header{
   display:none;position:sticky;top:0;z-index:10;
-  background:rgba(26,31,46,.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  /* Fallback */
+  background:var(--topbar-bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   padding:52px 16px 12px;
-  /* Eski iOS */
   padding:calc(constant(safe-area-inset-top) + 10px) 16px 12px;
-  /* Modern - minimum 44px garantili */
   padding:max(env(safe-area-inset-top), 44px) 16px 12px;
   border-bottom:.5px solid var(--border);
   align-items:center;justify-content:space-between;gap:8px;
 }
-.app.light .fs-header{background:rgba(245,240,232,.97);}
+.app.light .fs-header{/* handled by --topbar-bg variable */}
 .mpanel.fullscreen .fs-header{display:flex;}
 .mpanel.fullscreen .minner{padding:12px 16px 60px;}
 .fs-close{
@@ -206,15 +264,19 @@ html,body{width:100%;min-height:100%;}
 
   <!-- ── Üst çubuk ── -->
   <div class="top-bar">
-    <div class="qicon">☽</div>
+    <button class="qicon" onclick="toggleThemePicker()" aria-label="Tema seç" id="qicon">☽</button>
     <div>
       <div class="top-title">Kuran-ı Kerim Tilaveti</div>
       <div class="top-sub">Hfz. Mişari Raşid el-Afasi</div>
     </div>
-    <button class="theme-btn" onclick="toggleTheme()" aria-label="Tema değiştir">
-      <svg id="themeIco" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      <span id="themeTxt">Açık Tema</span>
-    </button>
+    <div class="theme-name-badge" id="themeNameBadge">Koyu</div>
+  </div>
+
+  <!-- ── Tema seçici ── -->
+  <div class="tp-backdrop" id="tpBackdrop" onclick="closeThemePicker()"></div>
+  <div class="theme-picker" id="themePicker">
+    <div class="tp-title">Tema Seç</div>
+    <div class="tp-grid" id="tpGrid"></div>
   </div>
 
   <!-- ── Oynatıcı (kompakt, oto-oynat dahil) ── -->
@@ -434,7 +496,7 @@ function fmt(s){s=Math.floor(s||0);return Math.floor(s/60)+':'+(s%60<10?'0':'')+
 function saveState(){
   try{
     localStorage.setItem('qk_v2',JSON.stringify({
-      cur, curVerse:Math.max(0,curVerse), viewMode, autoP
+      cur, curVerse:Math.max(0,curVerse), viewMode, autoP, theme:currentTheme
     }));
   }catch(e){}
 }
@@ -487,10 +549,22 @@ function playVerse(idx){
   saveState();
 }
 
-// ── Sureyi başa al ────────────────────────────────────────
+// ── Sureyi başa al (OYNATMADAN) ──────────────────────────
 function resetSurah(){
-  if(verseAudios.length>0){ playVerse(0); }
-  else{ sel(cur); }
+  if(!verseAudios.length) return;
+  activeAud.pause();
+  activeAud.onended=null;
+  curVerse=0;
+  activeAud.src=verseAudios[0];
+  activeAud.load();
+  activeAud.onended=onVerseEnd;
+  if(verseAudios.length>1){bufferAud.src=verseAudios[1];bufferAud.load();}
+  highlightVerse(0);
+  setP(false);
+  document.getElementById('prog').style.width='0%';
+  document.getElementById('tC').textContent='0:00';
+  document.getElementById('tT').innerHTML=`<strong>1</strong>&nbsp;/&nbsp;${verseAudios.length} ayet`;
+  saveState();
 }
 
 function togglePlay(){
@@ -534,7 +608,7 @@ async function loadVerseAudios(idx,token,resumeVerse=null){
     if(token!==loadToken) return;
     if(d.code===200){
       verseAudios=d.data.ayahs.map(a=>a.audio);
-      if(resumeVerse!==null && resumeVerse>0 && resumeVerse<verseAudios.length){
+      if(resumeVerse!==null && resumeVerse>=0 && resumeVerse<verseAudios.length){
         // Kaldığı ayeti yükle ama OTOMATİK OYNATMA — durdurulmuş göster
         curVerse=resumeVerse;
         activeAud.onended=onVerseEnd;
@@ -630,13 +704,55 @@ function renderOkunus(ayahs){
     `<div class="ma${curVerse===i?' act-v':''}"><div class="mn">${i+1}</div><div class="mt okn">${t}</div></div>`).join('');
 }
 
-function toggleAuto(){autoP=!autoP;document.getElementById('autoT').classList.toggle('on',autoP);saveState();}
-function toggleTheme(){
-  isLight=!isLight;
-  document.getElementById('app').classList.toggle('light',isLight);
-  document.getElementById('themeIco').innerHTML=isLight?SUN_ICO:MOON_ICO;
-  document.getElementById('themeTxt').textContent=isLight?'Koyu Tema':'Açık Tema';
+// ── Tema sistemi ─────────────────────────────────────────
+const THEMES=[
+  {id:'koyu',  label:'Koyu',     icon:'🌙', swatch:'#232A3B', accent:'#C9A84C'},
+  {id:'gece',  label:'Gece',     icon:'⭐', swatch:'#0D0D1A', accent:'#C9A84C'},
+  {id:'lacivert',label:'Lacivert',icon:'🌊', swatch:'#091828', accent:'#4BAEE8'},
+  {id:'akik',  label:'Akik',     icon:'🔥', swatch:'#22100C', accent:'#D4774E'},
+  {id:'zumrut',label:'Zümrüt',   icon:'🌿', swatch:'#081610', accent:'#3DBF82'},
+  {id:'acik',  label:'Açık',     icon:'☀️', swatch:'#F5F0E8', accent:'#9A6F2C'},
+];
+let currentTheme='koyu';
+let tpOpen=false;
+
+function buildThemePicker(){
+  const grid=document.getElementById('tpGrid');
+  grid.innerHTML=THEMES.map(t=>`
+    <div class="tp-item${t.id===currentTheme?' on':''}" id="tpi-${t.id}" onclick="setTheme('${t.id}')">
+      <div class="tp-swatch" style="background:${t.swatch};border-color:${t.accent}20;">${t.icon}</div>
+      <div class="tp-lbl">${t.label}</div>
+    </div>`).join('');
 }
+
+function setTheme(id){
+  const app=document.getElementById('app');
+  // Tüm tema sınıflarını kaldır
+  app.classList.remove('light','t-acik','t-gece','t-lacivert','t-akik','t-zumrut');
+  if(id!=='koyu') app.classList.add(id==='acik'?'light':'t-'+id);
+  currentTheme=id;
+  const t=THEMES.find(x=>x.id===id);
+  document.getElementById('themeNameBadge').textContent=t?t.label:'Tema';
+  // Picker'ı güncelle
+  document.querySelectorAll('.tp-item').forEach(el=>{
+    el.classList.toggle('on',el.id==='tpi-'+id);
+  });
+  closeThemePicker();
+  saveState();
+}
+
+function toggleThemePicker(){
+  tpOpen=!tpOpen;
+  document.getElementById('themePicker').classList.toggle('open',tpOpen);
+  document.getElementById('tpBackdrop').classList.toggle('open',tpOpen);
+  if(tpOpen) buildThemePicker();
+}
+function closeThemePicker(){
+  tpOpen=false;
+  document.getElementById('themePicker').classList.remove('open');
+  document.getElementById('tpBackdrop').classList.remove('open');
+}
+function toggleAuto(){autoP=!autoP;document.getElementById('autoT').classList.toggle('on',autoP);saveState();}
 function toggleList(){
   listOpen=!listOpen;
   document.getElementById('lPanel').classList.toggle('open',listOpen);
@@ -667,8 +783,11 @@ function renderL(){
     autoP    = saved.autoP   || false;
     document.getElementById('autoT').classList.toggle('on', autoP);
     syncTabButtons();
-    sel(saved.cur, saved.curVerse); // kaldığı sure + ayet, OYNATMADAN
+    if(saved.theme && saved.theme!=='koyu') setTheme(saved.theme);
+    else { buildThemePicker(); } // picker hazır, tema koyu
+    sel(saved.cur, saved.curVerse);
   } else {
+    buildThemePicker();
     sel(0);
   }
 })();
