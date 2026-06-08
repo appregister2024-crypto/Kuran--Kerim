@@ -84,6 +84,9 @@ html,body{width:100%;min-height:100%;}
 .cb.md{width:50px;height:50px;}
 .cb.lg{width:68px;height:68px;background:var(--grn);border-color:var(--grn);color:#fff;box-shadow:0 4px 12px rgba(46,204,113,.3);}
 .cb.lg:active{transform:scale(.95);background:#27AE60;}
+.cb.xs{width:36px;height:36px;color:var(--dim);}
+/* Reset butonu — altın vurgulu */
+.cb.reset{border-color:rgba(201,168,76,.4);color:var(--gold);}
 
 /* ── Oynatıcıya gömülü oto-oynat ── */
 .auto-row{
@@ -257,6 +260,13 @@ html,body{width:100%;min-height:100%;}
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
       </button>
     </div>
+    <!-- Sıfırla butonu — sure başına dön -->
+    <div style="display:flex;justify-content:center;margin-top:10px;">
+      <button class="cb xs reset" onclick="resetSurah()" aria-label="Sureyi başa al" title="Sureyi başa al" style="border-radius:20px;width:auto;padding:0 14px;gap:6px;display:flex;align-items:center;font-size:12px;font-weight:600;font-family:inherit;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-4.62"/></svg>
+        Sureyi Başa Al
+      </button>
+    </div>
     <!-- oto-oynat oynatıcı içine gömüldü -->
     <div class="auto-row">
       <span class="albl">
@@ -420,6 +430,22 @@ let activeAud=audA, bufferAud=audB;
 function p3(n){return String(n).padStart(3,'0');}
 function fmt(s){s=Math.floor(s||0);return Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60;}
 
+// ── localStorage kayıt / yükle ────────────────────────────
+function saveState(){
+  try{
+    localStorage.setItem('qk_v2',JSON.stringify({
+      cur, curVerse:Math.max(0,curVerse), viewMode, autoP
+    }));
+  }catch(e){}
+}
+function loadSavedState(){
+  try{
+    const s=JSON.parse(localStorage.getItem('qk_v2'));
+    if(s && typeof s.cur==='number' && s.cur>=0 && s.cur<114) return s;
+  }catch(e){}
+  return null;
+}
+
 function setP(v){
   playing=v;
   document.getElementById('playIco').innerHTML=v?PAUSE:PLAY;
@@ -458,6 +484,13 @@ function playVerse(idx){
   activeAud.onended=onVerseEnd;
   activeAud.play().then(()=>setP(true)).catch(()=>setP(false));
   if(idx+1<verseAudios.length){bufferAud.src=verseAudios[idx+1];bufferAud.load();}
+  saveState();
+}
+
+// ── Sureyi başa al ────────────────────────────────────────
+function resetSurah(){
+  if(verseAudios.length>0){ playVerse(0); }
+  else{ sel(cur); }
 }
 
 function togglePlay(){
@@ -470,7 +503,7 @@ function seekF(){if(curVerse<verseAudios.length-1)playVerse(curVerse+1);}
 function prevS(){if(cur>0)sel(cur-1);}
 function nextS(){if(cur<113)sel(cur+1);}
 
-function sel(i){
+function sel(i, resumeVerse=null){
   cur=i; curVerse=-1; verseAudios=[];
   const token=++loadToken;
   const s=S[i];
@@ -487,19 +520,37 @@ function sel(i){
   document.getElementById('sStat').textContent='Yükleniyor...';
   activeAud.pause(); activeAud.onended=null; bufferAud.pause();
   setP(false);
-  loadVerseAudios(i,token);
+  loadVerseAudios(i,token,resumeVerse);
   loadMeal(i); loadOkunus(i);
   renderL();
+  saveState();
 }
 
-async function loadVerseAudios(idx,token){
+async function loadVerseAudios(idx,token,resumeVerse=null){
   const num=idx+1;
   try{
     const r=await fetch(`https://api.alquran.cloud/v1/surah/${num}/ar.alafasy`);
     const d=await r.json();
     if(token!==loadToken) return;
-    if(d.code===200){verseAudios=d.data.ayahs.map(a=>a.audio);playVerse(0);}
-    else document.getElementById('sStat').textContent='Ses yüklenemedi';
+    if(d.code===200){
+      verseAudios=d.data.ayahs.map(a=>a.audio);
+      if(resumeVerse!==null && resumeVerse>0 && resumeVerse<verseAudios.length){
+        // Kaldığı ayeti yükle ama OTOMATİK OYNATMA — durdurulmuş göster
+        curVerse=resumeVerse;
+        activeAud.onended=onVerseEnd;
+        activeAud.src=verseAudios[resumeVerse];
+        activeAud.load();
+        highlightVerse(resumeVerse);
+        document.getElementById('sStat').textContent='Kaldığı yerden devam et ▶';
+        document.getElementById('tT').innerHTML=`<strong>${resumeVerse+1}</strong>&nbsp;/&nbsp;${verseAudios.length} ayet`;
+        const pct=Math.round(resumeVerse/verseAudios.length*100);
+        document.getElementById('prog').style.width=pct+'%';
+        // Sonraki ayeti arkaplanda hazırla
+        if(resumeVerse+1<verseAudios.length){bufferAud.src=verseAudios[resumeVerse+1];bufferAud.load();}
+      } else {
+        playVerse(0);
+      }
+    } else document.getElementById('sStat').textContent='Ses yüklenemedi';
   }catch(e){if(token===loadToken)document.getElementById('sStat').textContent='Bağlantı hatası';}
 }
 
@@ -579,7 +630,7 @@ function renderOkunus(ayahs){
     `<div class="ma${curVerse===i?' act-v':''}"><div class="mn">${i+1}</div><div class="mt okn">${t}</div></div>`).join('');
 }
 
-function toggleAuto(){autoP=!autoP;document.getElementById('autoT').classList.toggle('on',autoP);}
+function toggleAuto(){autoP=!autoP;document.getElementById('autoT').classList.toggle('on',autoP);saveState();}
 function toggleTheme(){
   isLight=!isLight;
   document.getElementById('app').classList.toggle('light',isLight);
@@ -608,7 +659,19 @@ function renderL(){
     </div>`).join('');
 }
 
-sel(0);
+// ── Başlat: kayıtlı durumdan devam et ────────────────────
+(function(){
+  const saved = loadSavedState();
+  if(saved){
+    viewMode = saved.viewMode || 'meal';
+    autoP    = saved.autoP   || false;
+    document.getElementById('autoT').classList.toggle('on', autoP);
+    syncTabButtons();
+    sel(saved.cur, saved.curVerse); // kaldığı sure + ayet, OYNATMADAN
+  } else {
+    sel(0);
+  }
+})();
 </script>
 </body>
 </html>
